@@ -1,27 +1,25 @@
 <script lang="ts">
-    import type { ActionData } from './$types';
+	import { enhance } from "$app/forms";
     
-    export let form: ActionData;
-</script>
+    
+    let {data, form} = $props();
 
+    // export the data provided by SvelteKit (which includes our action return)
 
-<h1>Login Test</h1>
-
-<form action="/login" method="post">
+    console.log('receiverd Page data:', data);
+  </script>
+  
+  <h1>Login Test</h1>
+  
+  <form method="post" use:enhance>
     <input type="text" name="email" placeholder="Email" />
     <input type="password" name="password" placeholder="Password" />
     <button type="submit">Login</button>
-</form>
-
-
-{#if form?.success}
-    <div class="success">
-        <p>{form.message}</p>
-        {#if form.user}
-            <div class="user-info">
-                <p>Welcome, {form.user.username}!</p>
-                <p>Email: {form.user.email}</p>
-            </div>
-        {/if}
-    </div>
-{/if}
+  </form>
+  
+  {#if form?.success}
+     <p>Successfully logged in! Welcome back, {form.result.firstName}</p>
+ {/if}
+ {#if !form?.success}
+     <p>Login  failed: {form?.error}</p>
+ {/if}

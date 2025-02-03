@@ -16,21 +16,9 @@ app.post("/login", (req, res)=>{
     const {email, password} = req.body
     const user = getUser(email)
     if(!user){
-        console.log("User not found")
-        return new Response(JSON.stringify({ error: "User not found" }), {
-            status: 401,
-            headers: {
-              "Content-Type": "application/json"
-            }
-          });
+        res.status(401).json({ error: "User not found" });
     }
-    console.log("Returning user")
-    return new Response({'success': true, 'user': user}, {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json"
-        }
-    });
+    res.status(200).json(user);
 })
 
 app.listen(3000, () => {

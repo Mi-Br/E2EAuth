@@ -1,4 +1,5 @@
 import type { Actions } from './$types';
+import { redirect } from '@sveltejs/kit';
 
 export const actions = {
 	default: async (event) => {
@@ -7,39 +8,20 @@ export const actions = {
 			const data = Object.fromEntries(formData);
 			const jsonData = JSON.stringify(data);
 			
-			console.log('About to send request with data:', jsonData);
-			console.log('Request URL:', 'http://localhost:3000/login');
-			
-			// Test server connectivity first
-			try {
-				const pingResponse = await fetch('http://localhost:3000/');
-				console.log('Server ping response:', pingResponse.status);
-			} catch (e) {
-				console.error('Server ping failed:', e);
-			}
-	
 			const response = await fetch('http://localhost:3000/login', {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
+				headers: { 'Content-Type': 'application/json' },
 				body: jsonData
 			});
-			
-			console.log('Response received');
+			if (!response.ok) {
+				return { success: false, error: 'Error from server' };
+			}
 			const result = await response.json();
-			return { success: true, data: result };
+			console.log('result from server', result);
+			return { success: true, result };
 		} catch (error) {
-			console.error('Detailed error:', {
-				name: error.name,
-				message: error.message,
-				cause: error.cause
-			});
-			return {
-				success: false,
-				message: 'Connection failed',
-				error: error.message
-			};
+			return { success: false, error: error.message };
 		}
 	}
 } satisfies Actions;
+
