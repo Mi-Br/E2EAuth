@@ -1,5 +1,5 @@
 import type { Actions } from './$types';
-import { redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 
 export const actions = {
 	default: async (event) => {
@@ -13,15 +13,15 @@ export const actions = {
 				headers: { 'Content-Type': 'application/json' },
 				body: jsonData
 			});
-			if (!response.ok) {
-				return { success: false, error: 'Error from server' };
+			if (response.status === 401 || response.status === 404) {
+				return fail(401, { success: false, data, error: 'User not found' });
 			}
 			const result = await response.json();
-			console.log('result from server', result);
-			return { success: true, result };
+			return { success: true, data, result };
 		} catch (error) {
-			return { success: false, error: error.message };
+			return fail(500, { success: false, error: 'Internal server error' });
 		}
 	}
 } satisfies Actions;
 
+  
